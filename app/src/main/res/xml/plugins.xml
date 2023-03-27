@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin-config>
-    <plugin name="StandardPlugin" class="kr.co.ob.obone.android.nexacro.StandardObject"/>
+    <plugin name="StandardPlugin" class="kr.co.decent.dpro.android.nexacro.StandardObject"/>
 </plugin-config>

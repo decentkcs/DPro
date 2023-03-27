@@ -38,7 +38,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1060323702579:android:2ae8364eb64ce0c159f046",
         "android_client_info": {
-          "package_name": "kr.co.ob.obone.android.dev"
+          "package_name": "kr.co.ob.obone.android.stg"
         }
       },
       "oauth_client": [

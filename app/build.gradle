@@ -6,10 +6,10 @@ android {
 
     signingConfigs {
         Signing {
-            storeFile file('../signkey/obone.jks')
-            storePassword 'dhqlaorwn2020!@'
-            keyPassword 'dhqlaorwn2020!@'
-            keyAlias 'obone'
+            storeFile file('../signkey/dpro.jks')
+            storePassword 'decent1!'
+            keyPassword 'dpro1!'
+            keyAlias 'Dpro'
         }
     }
 
@@ -21,8 +21,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
-        versionName "1.4"
-
+        versionName "1.0"
+        buildConfigField("String", "PROJECT_NAME", '"DPRO"')
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -57,32 +57,21 @@ android {
     productFlavors {
         dev {
             dimension "mode"
-            applicationIdSuffix ".dev"
-
-            manifestPlaceholders = [
-                    appLabel: "OB-1 DEV",
-            ]
-            buildConfigField "String", "SERVER", "\"http://61.43.143.84:48080\""
-
-        }
-        _test {
-            dimension "mode"
             applicationIdSuffix ".stg"
 
             manifestPlaceholders = [
-                    appLabel: "OB-1 TEST",
-//                    appLabel: "OB-1 Local1",
+                    appLabel: "Dpro Dev",
             ]
-//            buildConfigField "String", "SERVER", "\"https://ob-1test.ob.co.kr\""
-//            buildConfigField "String", "SERVER", "\"http://118.129.180.194:48080\""
+//            buildConfigField "String", "SERVER", "\"http://61.43.143.84:48080\""
             buildConfigField "String", "SERVER", "\"http://192.168.68.22:8080\""
+
         }
         real {
             dimension "mode"
             applicationIdSuffix ""
 
             manifestPlaceholders = [
-                    appLabel: "OB-1",
+                    appLabel: "Dpro",
             ]
             buildConfigField "String", "SERVER", "\"https://ob-1.ob.co.kr\""
         }
