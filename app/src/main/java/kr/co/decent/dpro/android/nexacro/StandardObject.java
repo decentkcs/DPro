@@ -85,10 +85,10 @@ public class StandardObject extends NexacroPlugin{
         return true;
     }
 
-    public boolean sendScan(int reason, Object retval, String action){
+    public boolean sendScan(String svcID, int reason, Object retval, String action){
         JSONObject obj = new JSONObject();
         try{
-            obj.put(CommonConstants.SVCID, "scan");     //callMethod 호출에 의한 callback 이 아니면 값은 없다.
+            obj.put(CommonConstants.SVCID, svcID);     //callMethod 호출에 의한 callback 이 아니면 값은 없다.
             obj.put(CommonConstants.REASON, reason);
             obj.put(CommonConstants.RETVAL, retval);
 

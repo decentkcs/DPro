@@ -152,7 +152,7 @@ public class BackgroundLocationUpdateService extends Service implements GoogleAp
         Uri notificationSound = RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(notificationSound);
         builder.setAutoCancel(true);
-        builder.setSmallIcon(R.mipmap.icon);
+        builder.setSmallIcon(R.drawable.icon);
         builder.setContentIntent(pendingIntent);
         Notification notification = builder.build();
         startForeground(101, notification);

@@ -1,7 +1,13 @@
 package kr.co.decent.dpro.android.nexacro;
 
+import static kr.co.decent.dpro.android.common.M3ConstantValues.LRSCANNER_ACTION_SETTING_CHANGE;
+import static kr.co.decent.dpro.android.common.M3ConstantValues.SCANNER_ACTION_BARCODE;
+import static kr.co.decent.dpro.android.common.M3ConstantValues.SCANNER_ACTION_IS_ENABLE;
+import static kr.co.decent.dpro.android.common.M3ConstantValues.SCANNER_ACTION_SETTING_CHANGE;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,9 +26,12 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.messaging.FirebaseMessaging;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.nexacro.NexacroActivity;
@@ -33,20 +42,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import android.app.AlertDialog;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import device.common.ScanConst;
 import kr.co.decent.dpro.android.R;
-import kr.co.decent.dpro.android.log.TraceLog;
 import kr.co.decent.dpro.android.common.CommonConstants;
 import kr.co.decent.dpro.android.gps.GPSService;
-import kr.co.decent.dpro.android.scan.ScanReceiver;
+import kr.co.decent.dpro.android.log.TraceLog;
+import kr.co.decent.dpro.android.scan.ScanReceiverM3;
+import kr.co.decent.dpro.android.scan.ScanReceiverM3;
+import kr.co.decent.dpro.android.scan.ScanReceiverPM90;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,6 +66,7 @@ public class NexacroActivityExt extends NexacroActivity {
     public static Context context;
     public static Boolean pauseFlag;
     public static Boolean pushMsgFlag;
+    public static String scanID;
 
 
     private final String LOG_TAG = this.getClass().getSimpleName(); //현재 Class Name 문자열
@@ -85,7 +89,8 @@ public class NexacroActivityExt extends NexacroActivity {
     private String mCallNum = "";
 
 
-    private static ScanReceiver mScanResultReceiver = null;
+    private static ScanReceiverPM90 scanReceiverPM90 = null;
+    private static ScanReceiverM3 scanReceiverM3 = null;
     private Context scanContext;
 
     @Override
@@ -96,13 +101,16 @@ public class NexacroActivityExt extends NexacroActivity {
         api = RetrofitClient.getInstance().create(CommonConstants.ApiInterface.class);
 
         LocalBroadcastManager.getInstance(this).registerReceiver( mMessageReceiver, new IntentFilter("custom-event-name"));
+
         context = this;
 
         this.pauseFlag = false;
         this.pushMsgFlag = false;
+        this.scanID = "";
 
         scanContext = this;
-        mScanResultReceiver = new ScanReceiver();
+        scanReceiverPM90 = new ScanReceiverPM90();
+        scanReceiverM3 = new ScanReceiverM3();
     }
 
     @Override
@@ -116,13 +124,45 @@ public class NexacroActivityExt extends NexacroActivity {
         super.onResume();
 
 
+        IntentFilter filterPM90 = setScanReceiverM3();
+        filterPM90.addAction(ScanConst.INTENT_USERMSG);
+        filterPM90.addAction(ScanConst.INTENT_EVENT);
+        scanContext.registerReceiver(scanReceiverPM90, filterPM90);
 
-//        mWaitDialog = ProgressDialog.show(scanContext, "", "Waiting", true);
-//        mHandler.postDelayed(mStartOnResume, 1000);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ScanConst.INTENT_USERMSG);
-        filter.addAction(ScanConst.INTENT_EVENT);
-        scanContext.registerReceiver(mScanResultReceiver, filter);
+        IntentFilter filterM3 = setScanReceiverM3();
+        scanContext.registerReceiver(scanReceiverM3, filterM3);
+        sendBroadcast(new Intent(SCANNER_ACTION_IS_ENABLE));
+    }
+
+    private IntentFilter setScanReceiverM3(){
+        IntentFilter filterM3 = new IntentFilter();
+        filterM3.addAction(SCANNER_ACTION_BARCODE);
+
+        Intent intentM3 = new Intent(LRSCANNER_ACTION_SETTING_CHANGE);
+        intentM3.putExtra("setting", "vibration");
+        intentM3.putExtra("vibration_value", 0);
+        context.sendOrderedBroadcast(intentM3, null);
+
+        intentM3 = new Intent(SCANNER_ACTION_SETTING_CHANGE);
+        intentM3.putExtra("setting", "sound");
+        intentM3.putExtra("sound_mode", 1);
+        context.sendOrderedBroadcast(intentM3, null);
+
+        intentM3 = new Intent(SCANNER_ACTION_SETTING_CHANGE);
+        intentM3.putExtra("setting", "end_char");
+        intentM3.putExtra("end_char_value", 6);
+        context.sendOrderedBroadcast(intentM3, null);
+
+        intentM3 = new Intent(SCANNER_ACTION_SETTING_CHANGE);
+        intentM3.putExtra("setting", "read_mode");
+        intentM3.putExtra("read_mode_value", 0);
+        context.sendOrderedBroadcast(intentM3, null);
+
+        intentM3 = new Intent(SCANNER_ACTION_SETTING_CHANGE);
+        intentM3.putExtra("setting", "output_mode");
+        intentM3.putExtra("output_mode_value", 2);
+        context.sendOrderedBroadcast(intentM3, null);
+        return filterM3;
     }
 
     @Override
@@ -130,7 +170,8 @@ public class NexacroActivityExt extends NexacroActivity {
         pauseFlag = true;
         super.onPause();
 
-        scanContext.unregisterReceiver(mScanResultReceiver);
+        scanContext.unregisterReceiver(scanReceiverPM90);
+        scanContext.unregisterReceiver(scanReceiverM3);
     }
 
     @Override
@@ -168,8 +209,17 @@ public class NexacroActivityExt extends NexacroActivity {
     public void callMethod(String mServiceId, JSONObject mParamData)
     {
         try {
-            if(mServiceId.equals("checkVersion")) {
+            if("checkVersion".equals(mServiceId)) {
                 standardObj.send(CommonConstants.CODE_SUCCESS, CommonConstants.APP_VERSION, standardObj.getActionString(CommonConstants.ON_CALLBACK));
+            }else if("scan".equals(mServiceId)          || "scanIc".equals(mServiceId) || "scanIcDi".equals(mServiceId)
+                    || "scanIcXInvn".equals(mServiceId) || "scanLocXInvn".equals(mServiceId)
+                    || "scanPick".equals(mServiceId)    || "scanBaecha".equals(mServiceId)
+                    || "scanInspection".equals(mServiceId)    || "scanInspectionDetail".equals(mServiceId)) {
+                scanID = mServiceId;
+            }else if("scanReceiverPM90".equals(mServiceId)) {
+                standardObj.sendScan(scanID, CommonConstants.CODE_SUCCESS, mParamData, standardObj.getActionString(CommonConstants.ON_CALLBACK));
+            }else if("scanReceiverM3".equals(mServiceId)) {
+                standardObj.sendScan(scanID, CommonConstants.CODE_SUCCESS, mParamData, standardObj.getActionString(CommonConstants.ON_CALLBACK));
             }
         } catch(Exception e) {
             e.printStackTrace();
@@ -591,7 +641,7 @@ public class NexacroActivityExt extends NexacroActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon)) //BitMap 이미지 요구
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon)) //BitMap 이미지 요구
                 .setContentTitle(title)
                 .setContentText(msg)
                 // 더 많은 내용이라서 일부만 보여줘야 하는 경우 아래 주석을 제거하면 setContentText에 있는 문자열 대신 아래 문자열을 보여줌
@@ -603,7 +653,7 @@ public class NexacroActivityExt extends NexacroActivity {
         //OREO API 26 이상에서는 채널 필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            builder.setSmallIcon(R.mipmap.icon); //mipmap 사용시 Oreo 이상에서 시스템 UI 에러남
+            builder.setSmallIcon(R.drawable.icon); //mipmap 사용시 Oreo 이상에서 시스템 UI 에러남
             CharSequence channelName  = "노티페케이션 채널";
             String description = "오레오 이상을 위한 것임";
             int importance = NotificationManager.IMPORTANCE_HIGH;
@@ -615,7 +665,7 @@ public class NexacroActivityExt extends NexacroActivity {
             assert notificationManager != null;
             notificationManager.createNotificationChannel(channel);
 
-        }else builder.setSmallIcon(R.mipmap.icon); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
+        }else builder.setSmallIcon(R.drawable.icon); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
 
         assert notificationManager != null;
         notificationManager.notify(notiId, builder.build()); // 고유숫자로 노티피케이션 동작시킴

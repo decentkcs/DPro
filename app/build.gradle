@@ -57,23 +57,24 @@ android {
     productFlavors {
         dev {
             dimension "mode"
-            applicationIdSuffix ".stg"
+            applicationIdSuffix ""
 
             manifestPlaceholders = [
-                    appLabel: "Dpro Dev",
+                    appLabel: "HL Dev",
             ]
 //            buildConfigField "String", "SERVER", "\"http://61.43.143.84:48080\""
-            buildConfigField "String", "SERVER", "\"http://192.168.68.22:8080\""
-
+//            buildConfigField "String", "SERVER", "\"http://192.168.68.18:8080\""
+            buildConfigField "String", "SERVER", "\"http://175.126.226.144:10100\""
         }
         real {
             dimension "mode"
             applicationIdSuffix ""
 
             manifestPlaceholders = [
-                    appLabel: "Dpro",
+                    appLabel: "HL",
             ]
-            buildConfigField "String", "SERVER", "\"https://ob-1.ob.co.kr\""
+            buildConfigField "String", "SERVER", "\"http://hl.dprocloud.co.kr\""
+//            buildConfigField "String", "SERVER", "\"http://175.126.226.144:10100\""
         }
 
     }
@@ -124,7 +125,8 @@ dependencies {
     implementation 'com.google.zxing:core:3.4.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0@aar'
 
-    implementation fileTree(includes: ['.jar'], dir: 'libs')
-    compileOnly files('sdk/device.sdk.jar')
+//    implementation fileTree(includes: ['.jar'], dir: 'libs')
+    implementation files('libs/device.sdk.jar')
+    implementation files('libs/M3SDK.jar')
 }
 apply plugin: 'com.google.gms.google-services'

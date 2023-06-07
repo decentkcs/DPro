@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import device.common.ScanConst;
 import kr.co.decent.dpro.android.nexacro.NexacroActivityExt;
 
-public class ScanReceiver extends BroadcastReceiver {
+public class ScanReceiverPM90 extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
@@ -27,21 +27,21 @@ public class ScanReceiver extends BroadcastReceiver {
                 byte modifier               = intent.getByteExtra(ScanConst.EXTRA_EVENT_DECODE_MODIFIER, (byte) 0);
                 int decodingTime            = intent.getIntExtra(ScanConst.EXTRA_EVENT_DECODE_TIME, 0);
 
-                System.out.println("LOG == " + "1. result: " + result);
-                System.out.println("LOG == " + "2. bytes length: " + decodeBytesLength);
-                System.out.println("LOG == " + "3. bytes value: " + decodeBytesValue);
-                System.out.println("LOG == " + "4. decoding length: " + decodeLength);
-                System.out.println("LOG == " + "5. decoding value: " + decodeValue);
-                System.out.println("LOG == " + "6. symbol name: " + symbolName);
-                System.out.println("LOG == " + "7. symbol id: " + symbolId);
-                System.out.println("LOG == " + "8. symbol type: " + symbolType);
-                System.out.println("LOG == " + "9. decoding letter: " + letter);
-                System.out.println("LOG == " + "10.decoding modifier: " + modifier);
-                System.out.println("LOG == " + "11.decoding time: " + decodingTime);
+//                System.out.println("LOG == " + "1. result: " + result);
+//                System.out.println("LOG == " + "2. bytes length: " + decodeBytesLength);
+//                System.out.println("LOG == " + "3. bytes value: " + decodeBytesValue);
+//                System.out.println("LOG == " + "4. decoding length: " + decodeLength);
+//                System.out.println("LOG == " + "5. decoding value: " + decodeValue);
+//                System.out.println("LOG == " + "6. symbol name: " + symbolName);
+//                System.out.println("LOG == " + "7. symbol id: " + symbolId);
+//                System.out.println("LOG == " + "8. symbol type: " + symbolType);
+//                System.out.println("LOG == " + "9. decoding letter: " + letter);
+//                System.out.println("LOG == " + "10.decoding modifier: " + modifier);
+//                System.out.println("LOG == " + "11.decoding time: " + decodingTime);
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("scanVal", decodeValue);
-                ((NexacroActivityExt)NexacroActivityExt.context).callMethod("scan", jsonObject);
+                ((NexacroActivityExt)NexacroActivityExt.context).callMethod("scanReceiverPM90", jsonObject);
             }
         }catch (Exception e){
             e.printStackTrace();

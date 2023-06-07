@@ -14,7 +14,7 @@ public class CommonConstants {
     public static final String APP_VERSION = BuildConfig.VERSION_NAME;
     public static final String PROJECT_NAME = BuildConfig.PROJECT_NAME;
     public static final String BASE_URL = BuildConfig.SERVER;
-    public static final String MOBILE_PATH = "/ams/ob1_mobile/";
+    public static final String MOBILE_PATH = "/ams/ams_mobile/";
     public static final String START_FILE = "start_android.json";
     public static final String GPS_RUL = BASE_URL + "/ams/restfulApiController/saveGps.do";
 

@@ -105,7 +105,7 @@ public class NotificationService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.icon)) //BitMap 이미지 요구
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.icon)) //BitMap 이미지 요구
                 .setContentTitle(title)
                 .setContentText(msg)
                 // 더 많은 내용이라서 일부만 보여줘야 하는 경우 아래 주석을 제거하면 setContentText에 있는 문자열 대신 아래 문자열을 보여줌
@@ -117,7 +117,7 @@ public class NotificationService extends FirebaseMessagingService {
         //OREO API 26 이상에서는 채널 필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            builder.setSmallIcon(R.mipmap.icon); //mipmap 사용시 Oreo 이상에서 시스템 UI 에러남
+            builder.setSmallIcon(R.drawable.icon); //mipmap 사용시 Oreo 이상에서 시스템 UI 에러남
             CharSequence channelName  = "노티페케이션 채널";
             String description = "오레오 이상을 위한 것임";
             int importance = NotificationManager.IMPORTANCE_HIGH;
@@ -129,7 +129,7 @@ public class NotificationService extends FirebaseMessagingService {
             assert notificationManager != null;
             notificationManager.createNotificationChannel(channel);
 
-        }else builder.setSmallIcon(R.mipmap.icon); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
+        }else builder.setSmallIcon(R.drawable.icon); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
 
         assert notificationManager != null;
         notificationManager.notify(notiId, builder.build()); // 고유숫자로 노티피케이션 동작시킴
@@ -168,14 +168,14 @@ public class NotificationService extends FirebaseMessagingService {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                     .setContentTitle(title)//알림제목 설정
                     .setContentText(msg)//알림메시지 설정
-                    .setSmallIcon(R.mipmap.icon)//알림 아이콘 설정
+                    .setSmallIcon(R.drawable.icon)//알림 아이콘 설정
                     .setAutoCancel(true); //사용자가 터치하면 자동으로 알림이 닫힘
 
             notificationManager.notify(notiId,builder.build());
             builder.setContentIntent(pendingIntent); //알림이 클릭됐을 때 펜딩 인텐트를 제공
 
         } else {//API 수준 26(Android Oreo)이하일 때
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(R.mipmap.icon)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this).setSmallIcon(R.drawable.icon)
                     .setContentTitle(title)
                     .setContentText(msg)
                     .setAutoCancel(true)

@@ -49,11 +49,11 @@
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/icon"
+        android:icon="@drawable/icon"
         android:label="${appLabel}"
-        android:roundIcon="@mipmap/icon"
+        android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Obone"
+        android:theme="@style/Theme.HL"
         android:usesCleartextTraffic="true">
 
         <meta-data
@@ -136,7 +136,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <uses-library android:name="device.sdk" android:required="true"/>
     </application>
 
 </manifest>
